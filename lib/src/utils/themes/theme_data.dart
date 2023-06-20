@@ -6,9 +6,34 @@ class AppTheme {
   final light = ThemeData(
     primaryColor: AppColors.kPrimaryColor,
     primarySwatch: AppColors.kPrimarySwatch,
-    fontFamily: 'Poppins',
+    scaffoldBackgroundColor: AppColors.kPrimaryColor,
+    appBarTheme: const AppBarTheme(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      iconTheme: IconThemeData(
+        color: AppColors.kTitleTextColor,
+      ),
+      actionsIconTheme: IconThemeData(
+        color: AppColors.kTitleTextColor,
+      ),
+    ),
+    textTheme: const TextTheme(
+      headlineLarge: TextStyle(
+        fontSize: 24,
+        color: AppColors.kWhiteColor,
+        fontWeight: FontWeight.w500,
+        overflow: TextOverflow.ellipsis,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 18,
+        color: AppColors.kTitleTextColor,
+        fontWeight: FontWeight.w500,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    // fontFamily: 'Poppins',
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.kPrimaryColor,
+      backgroundColor: AppColors.kAccentColor,
     ),
   );
 
@@ -57,5 +82,5 @@ class AppTheme {
     fontSize: 12,
   );
   static const textBoldBlack14 =
-  TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
 }

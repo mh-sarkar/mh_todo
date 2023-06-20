@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_donate_app/src/utils/constants/route_name_constants.dart';
+import 'package:todo/src/utils/constants/route_name_constants.dart';
 import 'package:get/get.dart';
 
 import 'shared/shared_widgets/custom_sized_boxes.dart';
@@ -30,14 +30,14 @@ class SplashScreen extends StatelessWidget {
                     )
                   ]),
               child: const Icon(
-                Icons.fastfood_rounded,
+                Icons.task_rounded,
                 color: Colors.black54,
                 size: 120,
               ),
             ),
             CustomSizedBox.space16H,
             const Text(
-              'FOOD DONATE APP',
+              'TODO APP',
               style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w500,

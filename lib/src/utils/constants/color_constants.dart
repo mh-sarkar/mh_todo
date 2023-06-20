@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color kPrimaryColor = Color(0xff006747);
+  static const Color kPrimaryColor = Color(0xff3d439d);
+  static const Color kAccentColor = Color(0xffff00f7);
+  static const Color kBoxColor = Color(0xff110754);
+  static const Color kTitleTextColor = Color(0xff9aacfb);
   static const Color kTextColor = Color(0xFF172331);
   static const Color kTextColorLite = Color(0xFF8C8FA5);
   static MaterialColor kPrimarySwatch = MaterialColor(0xff006747, swatch);
@@ -34,15 +37,15 @@ class AppColors {
   static const Color kTransparent = Colors.transparent;
 
   static Color kPrimaryWithOpacityColor2P =
-  const Color(0xff006747).withOpacity(0.02);
+  kPrimaryColor.withOpacity(0.02);
   static Color kPrimaryWithOpacityColor4P =
-  const Color(0xff006747).withOpacity(0.04);
+  kPrimaryColor.withOpacity(0.04);
   static Color kPrimaryWithOpacityColor5P =
-  const Color(0xff006747).withOpacity(0.05);
+  kPrimaryColor.withOpacity(0.05);
   static Color kPrimaryWithOpacityColor10P =
-  const Color(0xff006747).withOpacity(0.1);
+  kPrimaryColor.withOpacity(0.1);
   static Color kPrimaryWithOpacityColor20P =
-  const Color(0xff006747).withOpacity(0.2);
+  kPrimaryColor.withOpacity(0.2);
 
   static const Color kLightSilver = Color(0xffD9D9D9);
 }

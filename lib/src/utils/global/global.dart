@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 
+
+final globalLogger = Logger();
+const uuid = Uuid();
 class Global {
   static final storage = GetStorage();
-  static final logger = Logger();
 
   static setLocalData(String key, dynamic value) {
     storage.write(key, value);

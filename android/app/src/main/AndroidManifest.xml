@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bb.food_donate_app">
+    package="com.mh.todo">
    <application
-        android:label="Food Donate App"
+        android:label="MH TODO"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

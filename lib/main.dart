@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:todo/src/shared/binding/home_binding.dart';
 
-import 'src/shared/binding/auth_binding.dart';
 import 'src/utils/constants/route_name_constants.dart';
 import 'src/utils/language/language.dart';
 import 'src/utils/language/language_storage.dart';
@@ -29,18 +29,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String l1 = StorageData.getLanguageCode1(key: languageCode1Key);
-    String l2 = StorageData.getLanguageCode1(key: languageCode2Key);
 
     return GetMaterialApp(
-      title: 'Food Donate App',
+      title: 'MH TODO',
       debugShowCheckedModeBanner: false,
       translations: LanguageTranslation(),
-      locale: Locale(l1, l2),
-      fallbackLocale: Locale(l1, l2),
       theme: AppTheme().light,
       initialRoute: AppRouteName.kPageSplash,
-      initialBinding: AuthBinding(),
+      initialBinding: HomeBinding(),
       getPages: AppRoutes.routes(),
     );
   }

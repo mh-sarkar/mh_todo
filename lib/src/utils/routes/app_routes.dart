@@ -1,4 +1,4 @@
-import 'package:food_donate_app/src/splash_screen.dart';
+import 'package:todo/src/splash_screen.dart';
 import 'package:get/get.dart';
 
 import '../../modules/dashboard/views/dashboard.dart';
@@ -14,9 +14,5 @@ class AppRoutes {
       name: AppRouteName.kPageDashboard,
       page: () => const DashboardScreen(),
     ),
-    // GetPage(
-    //   name: AppRouteName.kPageSaleWindow,
-    //   page: () => const SaleWindowPage(),
-    // ),
   ];
 }
