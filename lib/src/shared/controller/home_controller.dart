@@ -11,25 +11,34 @@ class HomeController extends GetxController {
   List<TodoModel> get todoList => _todoList;
   final todoListKey = 'TODO_LIST_KEY';
 
-  syncToLocal(){
-
+  @override
+  onInit(){
+    super.onInit();
+    syncToRunTimeAllData();
   }
 
-  syncToRunTime(){
-
+  syncToLocal() {
+    Global.storage.write(
+        todoListKey, _todoList.map((element) => element.toJson()).toList());
   }
 
-  setTodoInLocal(TodoModel todoItem){
+  syncToRunTimeAllData() {
+    dynamic todoLocalList = Global.storage.read(todoListKey) ?? [];
+    todoLocalList.forEach((todo) {
+      _todoList.add(TodoModel.fromJson(todo));
+    });
+  }
+
+  setTodoInLocal(TodoModel todoItem) {
     final data = Global.storage.read(todoListKey);
-    if(data!=null && data.isNotEmpty){
-
-    }else{
+    if (data == null) {
       Global.storage.write(todoListKey, []);
     }
+    data.add(todoItem.toJson());
+    Global.storage.write(todoListKey, data);
   }
 
-
-  createTodo(String title, DateTime dateTime){
+  createTodo(String title, DateTime dateTime) {
     final date = DateFormat('yyyy-MM-dd').format(dateTime);
     final dateTi = DateFormat('yyyy-MM-dd hh:mm:ss').format(dateTime);
     final data = {
@@ -39,20 +48,21 @@ class HomeController extends GetxController {
       "type": "0",
       "todo_date": date,
       "complete_status": "0",
-      "created_at":dateTi,
-      "updated_at":dateTi
+      "created_at": dateTi,
+      "updated_at": dateTi
     };
+    globalLogger.d(data);
     final todoItem = TodoModel.fromJson(data);
-
-
-
+    setTodoInLocal(todoItem);
+    _todoList.add(todoItem);
   }
 
-  updateTodo(){
-
+  updateTodo(TodoModel todoItem) {
+    _todoList[_todoList.indexWhere((element) => element.id == todoItem.id)] = todoItem;
+    syncToLocal();
   }
 
-  removeTodo(){
-
-  }
+  removeTodo(TodoModel todoItem) {
+    _todoList.removeAt(_todoList.indexWhere((element) => element.id == todoItem.id));
+    syncToLocal();}
 }

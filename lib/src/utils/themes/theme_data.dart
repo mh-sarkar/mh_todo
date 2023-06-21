@@ -30,6 +30,12 @@ class AppTheme {
         fontWeight: FontWeight.w500,
         overflow: TextOverflow.ellipsis,
       ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        color: AppColors.kWhiteColor,
+        fontWeight: FontWeight.w500,
+        overflow: TextOverflow.ellipsis,
+      ),
     ),
     // fontFamily: 'Poppins',
     floatingActionButtonTheme: const FloatingActionButtonThemeData(

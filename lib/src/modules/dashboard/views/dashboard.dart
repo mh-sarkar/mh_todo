@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:todo/src/shared/controller/home_controller.dart';
 import 'package:todo/src/shared/shared_widgets/custom_sized_boxes.dart';
 import 'package:todo/src/utils/constants/color_constants.dart';
+import 'package:todo/src/utils/global/global.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -22,12 +23,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.dispose();
   }
 
-  void _onTodoAdd(){
+  void _onTodoAdd() {
     final now = DateTime.now();
-    HomeController.to.createTodo(_todoController.text,now );
+    HomeController.to.createTodo(_todoController.text, now);
     _todoController.text = "";
     _todoFocusNode.unfocus();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,15 +45,107 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HeadLineText(
+                const HeadLineText(
                   headline: "What's up, Mehedi!",
                 ),
-                TitleText(title: "categories"),
-                TitleText(title: "today's task"),
+                // const TitleText(title: "categories"),
+                CustomSizedBox.space16H,
+                const TitleText(title: "today's task"),
+                Expanded(
+                  child: Obx(
+                    () => ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: HomeController.to.todoList.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = HomeController.to.todoList[index];
+                        return Dismissible(
+                          key: Key(todoItem.id!),
+                          background: Container(color: Colors.red),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            // setState(() {
+                            //   items.removeAt(index);
+                            // });
+                            HomeController.to.removeTodo(todoItem);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("\"${todoItem.title}\" dismissed"),
+                              ),
+                            );
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              globalLogger.d(todoItem.completeStatus!);
+                              final todo = todoItem;
+                              todo.completeStatus = todo.completeStatus == '1' ? '0' : '1';
+                              HomeController.to.updateTodo(todo);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: AppColors.kBoxColor,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      globalLogger.d(todoItem.completeStatus!);
+                                      final todo = todoItem;
+                                      todo.completeStatus = todo.completeStatus == '1' ? '0' : '1';
+                                      HomeController.to.updateTodo(todo);
+                                    },
+                                    child: Container(
+                                      height: 14,
+                                      width: 14,
+                                      decoration: BoxDecoration(
+                                        color: todoItem.completeStatus == '0'
+                                            ? Colors.transparent
+                                            : todoItem.type == '0'
+                                                ? AppColors.kTitleTextColor
+                                                : AppColors.kAccentColor,
+                                        borderRadius: BorderRadius.circular(100),
+                                        border: todoItem.completeStatus == '0'
+                                            ? Border.all(
+                                                color: todoItem.type == '0'
+                                                    ? AppColors.kTitleTextColor
+                                                    : AppColors.kAccentColor,
+                                              )
+                                            : null,
+                                      ),
+                                      child: todoItem.completeStatus == '1'
+                                          ? const Icon(
+                                              Icons.check_rounded,
+                                              color: Colors.white,
+                                              size: 10,
+                                            )
+                                          : const SizedBox(),
+                                    ),
+                                  ),
+                                  CustomSizedBox.space4W,
+                                  Expanded(
+                                    child: Text(
+                                      todoItem.title!,
+                                      style: TextStyle(
+                                          decoration:
+                                              todoItem.completeStatus == '1' ? TextDecoration.lineThrough : null),
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
