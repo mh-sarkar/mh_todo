@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo/src/modules/dashboard/models/todo_model.dart';
 import 'package:todo/src/shared/controller/home_controller.dart';
 import 'package:todo/src/shared/shared_widgets/custom_sized_boxes.dart';
 import 'package:todo/src/utils/constants/color_constants.dart';
@@ -24,10 +27,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _onTodoAdd() {
-    final now = DateTime.now();
-    HomeController.to.createTodo(_todoController.text, now);
-    _todoController.text = "";
-    _todoFocusNode.unfocus();
+    if (_todoController.text.isNotEmpty) {
+      final now = DateTime.now();
+      HomeController.to.createTodo(_todoController.text, now);
+      _todoController.text = "";
+      _todoFocusNode.unfocus();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(milliseconds: 1500),
+          content: const Text("Must write something for add todo"),
+          action: SnackBarAction(
+            label: "OKAY",
+            textColor: AppColors.kAccentColor,
+            onPressed: () {
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  void _onTodoRemove(int index, TodoModel todoItem) {
+    final removeTodoItem = HomeController.to.removeTodo(index);
+    HomeController.to.isDeleting(true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 3),
+        content: Text("\"${todoItem.title}\" dismissed"),
+        action: SnackBarAction(
+          label: "UNDO",
+          textColor: AppColors.kAccentColor,
+          onPressed: () {
+            HomeController.to.isUndoPressed(true);
+            HomeController.to.isDeleting(false);
+            HomeController.to.undoTodo(index, removeTodoItem);
+          },
+        ),
+      ),
+    );
+
+    Timer.periodic(const Duration(seconds: 3), (timer) async {
+      if (HomeController.to.isUndoPressed.value) {
+        timer.cancel();
+        HomeController.to.isDeleting(false);
+      } else {
+        HomeController.to.isUndoPressed(false);
+        HomeController.to.isDeleting(false);
+      }
+    });
   }
 
   @override
@@ -52,41 +101,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const HeadLineText(
                   headline: "What's up, Mehedi!",
                 ),
-                // const TitleText(title: "categories"),
                 CustomSizedBox.space16H,
                 const TitleText(title: "today's task"),
                 Expanded(
                   child: Obx(
                     () => ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       itemCount: HomeController.to.todoList.length,
                       itemBuilder: (context, index) {
                         final todoItem = HomeController.to.todoList[index];
                         return Dismissible(
                           key: Key(todoItem.id!),
-                          background: Container(color: Colors.red),
-                          direction: DismissDirection.endToStart,
-                          onDismissed: (direction) {
-                            // setState(() {
-                            //   items.removeAt(index);
-                            // });
-                            HomeController.to.removeTodo(todoItem);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("\"${todoItem.title}\" dismissed"),
+                          background: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.kAccentColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 4,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.delete_rounded,
+                                color: AppColors.kPrimaryColor,
                               ),
-                            );
+                            ),
+                          ),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            if (todoItem.completeStatus == '1') {
+                              _onTodoRemove(index, todoItem);
+                              return true;
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 3),
+                                  content: Text(
+                                      "\"${todoItem.title}\" todo is not complete yet. Do you still remove it?"),
+                                  action: SnackBarAction(
+                                    label: "YES",
+                                    textColor: AppColors.kAccentColor,
+                                    onPressed: () {
+                                      _onTodoRemove(index, todoItem);
+                                    },
+                                  ),
+                                ),
+                              );
+                              return false;
+                            }
                           },
                           child: GestureDetector(
                             onTap: () {
                               globalLogger.d(todoItem.completeStatus!);
                               final todo = todoItem;
-                              todo.completeStatus = todo.completeStatus == '1' ? '0' : '1';
+                              todo.completeStatus =
+                                  todo.completeStatus == '1' ? '0' : '1';
                               HomeController.to.updateTodo(todo);
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 4),
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 8),
                               decoration: BoxDecoration(
                                 color: AppColors.kBoxColor,
                                 borderRadius: BorderRadius.circular(8),
@@ -97,7 +175,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     onTap: () {
                                       globalLogger.d(todoItem.completeStatus!);
                                       final todo = todoItem;
-                                      todo.completeStatus = todo.completeStatus == '1' ? '0' : '1';
+                                      todo.completeStatus =
+                                          todo.completeStatus == '1'
+                                              ? '0'
+                                              : '1';
                                       HomeController.to.updateTodo(todo);
                                     },
                                     child: Container(
@@ -109,7 +190,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             : todoItem.type == '0'
                                                 ? AppColors.kTitleTextColor
                                                 : AppColors.kAccentColor,
-                                        borderRadius: BorderRadius.circular(100),
+                                        borderRadius:
+                                            BorderRadius.circular(100),
                                         border: todoItem.completeStatus == '0'
                                             ? Border.all(
                                                 color: todoItem.type == '0'
@@ -132,8 +214,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: Text(
                                       todoItem.title!,
                                       style: TextStyle(
+                                          decorationThickness: 2.5,
+                                          decorationColor: todoItem.type == '0'
+                                              ? AppColors.kTitleTextColor
+                                              : AppColors.kAccentColor,
                                           decoration:
-                                              todoItem.completeStatus == '1' ? TextDecoration.lineThrough : null),
+                                              todoItem.completeStatus == '1'
+                                                  ? TextDecoration.lineThrough
+                                                  : null),
                                       maxLines: 2,
                                     ),
                                   ),
@@ -158,7 +246,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     controller: _todoController,
                     focusNode: _todoFocusNode,
                     decoration: InputDecoration(
-                      // prefixIcon: Icon(Icons.task_rounded),
                       fillColor: AppColors.kTitleTextColor,
                       filled: true,
                       border: OutlineInputBorder(
@@ -190,12 +277,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   child: Icon(
-      //     Icons.add_rounded,
-      //   ),
-      // ),
     );
   }
 }

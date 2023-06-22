@@ -7,12 +7,14 @@ class HomeController extends GetxController {
   static HomeController get to => Get.find();
 
   final RxList<TodoModel> _todoList = <TodoModel>[].obs;
+  final RxBool isDeleting = false.obs;
+  final RxBool isUndoPressed = false.obs;
 
   List<TodoModel> get todoList => _todoList;
   final todoListKey = 'TODO_LIST_KEY';
 
   @override
-  onInit(){
+  onInit() {
     super.onInit();
     syncToRunTimeAllData();
   }
@@ -58,11 +60,20 @@ class HomeController extends GetxController {
   }
 
   updateTodo(TodoModel todoItem) {
-    _todoList[_todoList.indexWhere((element) => element.id == todoItem.id)] = todoItem;
+
+    _todoList[_todoList.indexWhere((element) => element.id == todoItem.id)] =
+        todoItem;
     syncToLocal();
   }
 
-  removeTodo(TodoModel todoItem) {
-    _todoList.removeAt(_todoList.indexWhere((element) => element.id == todoItem.id));
-    syncToLocal();}
+  undoTodo(int index, TodoModel todoItem) {
+    _todoList.insert(index, todoItem);
+    syncToLocal();
+  }
+
+  TodoModel removeTodo(int index) {
+   final removeItem = _todoList.removeAt(index);
+    syncToLocal();
+    return removeItem;
+  }
 }
